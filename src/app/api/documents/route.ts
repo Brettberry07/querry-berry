@@ -10,16 +10,16 @@ type Payload = {
     url: string;
     datePosted?: string | null;
     snippet?: string | null;
+    num_tokens: number;
   };
   tokens: { token: string; frequency: number }[];
 };
-
 
 export async function POST(request: NextRequest) {
   try {
     const { document, tokens } = await request.json() as Payload;
 
-    // 1️⃣ Create the Document
+    // Create the Document
     const createdDocument = await prisma.document.create({
       data: {
         title: document.title ?? null,
@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
         url: document.url, // this one is required
         datePosted: document.datePosted ?? null,
         snippet: document.snippet ?? null,
+        num_tokens: document.num_tokens,
       },
     });
 

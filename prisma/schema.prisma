@@ -24,7 +24,9 @@ model Document {
   datePosted  String?
   snippet     String?
   // relation field to link tokens
-  tokens      TokenDocument[]  
+  tokens      TokenDocument[] 
+
+  num_tokens  Int 
 
   @@map("documents")
 }
