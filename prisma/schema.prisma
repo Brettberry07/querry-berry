@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// This represents a singular web page and it's metadata
+// The "tokens" is in relation to the TokenDocument Model, this tells us
+// which tokens appear in the model and how often
+model Document {
+  id          Int              @id @default(autoincrement())
+  title       String?
+  description String?
+  url         String           @unique
+  datePosted  String?
+  snippet     String?
+  // relation field to link tokens
+  tokens      TokenDocument[]  
+
+  @@map("documents")
+}
+
+// Represents a token from all the web pages
+// docs is in relation to TokenDocument Model and tells us how often that token appears in the different documents and what documents it appears in
+model Token {
+  id    Int              @id @default(autoincrement())
+  token String           @unique
+  docs  TokenDocument[]  
+
+  @@map("tokens")
+}
+
+// This implements the inverted index.
+// this references a specific token, a document, and that counts the frequency of that token in that document
+// also the @@id creates a new unique id for every combination
+model TokenDocument {
+  token      Token     @relation(fields: [tokenId], references: [id])
+  tokenId    Int
+  document   Document  @relation(fields: [documentId], references: [id])
+  documentId Int
+  frequency  Int
+
+  @@id([tokenId, documentId])
+  @@map("token_document")
+}
+
+// Represents a user, pretty standard stuff
+// Alsp has a relation to the search history table
+model User {
+  id           Int             @id @default(autoincrement())
+  email        String          @unique
+  passwordHash String          @map("password_hash")
+  history      SearchHistory[]
+
+  @@map("users")
+}
+
+// Has a unique id, the user it belongs to, that user's id, and then the search history
+model SearchHistory {
+  id         Int      @id @default(autoincrement())
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     Int?
+  query      String
+  searchedAt DateTime @default(now()) @map("searched_at")
+
+  @@map("search_history")
+}
+
+
