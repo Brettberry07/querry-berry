@@ -31,15 +31,15 @@ export default function Home() {
           </div>
           <div className="flex flex-row w-[10%] justify-between items-center">
             <a href="https://mail.google.com/" className="hover:text-rose-400">Gmail</a>
-            <a href="/settings" className="hover:text-rose-400">Settings</a>
+            <a href="https://calendar.google.com/" className="hover:text-rose-400">Calendar</a>
             <img src="/account_icon.svg" alt="Search Icon" width={40} height={40} className="p-1 rounded-full bg-neutral-900 hover:cursor-pointer hover:bg-neutral-700" onClick={() => navigate('/account')}/>
           </div>
 
         </div>
       {/* Middle main body, has the title, the searchj bar, etc */}
-      <div className="flex flex-col w-screen h-[90%] items-center justify-center space-y-4">
-        <h1 className="text-center text-8xl text-rose-600 font-bold">Querry-Berry</h1>
-        <div className={`flex flex-row items-center justify-left space-x-2 w-[25%] rounded-3xl p-2 ${isFocused ? 'border-2 border-rose-500' : ''} ${isHovered ? 'shadow-lg bg-neutral-600' : 'bg-neutral-700'}`} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+      <div className="flex flex-col w-screen h-[90%] items-center justify-center space-y-6">
+        <h1 className="text-center text-7xl text-rose-600 font-bold">Querry-Berry</h1>
+        <div className={`flex flex-row items-center justify-left space-x-2 w-[30%] rounded-3xl p-2 ${isFocused ? 'border-2 border-rose-500' : ''} ${isHovered ? 'shadow-lg bg-neutral-600' : 'bg-neutral-700'}`} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
           <Image src="/search_icon.svg" alt="Search Icon" width={24} height={24} />
           <input 
             type="text" 
@@ -68,7 +68,6 @@ export default function Home() {
         <div className="flex flex-row justify-between items-center bg-neutral-900 w-screen h-[5%] mt-[10%] p-2 text-rose-600">
           <a href="/privacy" className="hover:text-rose-400">Privacy</a>
           <a href="/terms" className="hover:text-rose-400">Terms</a>
-          <a href="/settings" className="hover:text-rose-400">Settings</a>
         </div>
       <div> 
       </div>
