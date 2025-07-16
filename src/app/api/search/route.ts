@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     // Sort by score
     const sorted = Object.entries(docScoring)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 10);
+    .slice(0, 15);
 
     // Fetch documents
     const results = await prisma.document.findMany({
