@@ -22,8 +22,11 @@ async function getTokens(query: Query) {
 
     const freq: { [key: string]: number } = {};
     tokens.forEach(t => freq[t] = (freq[t] || 0) + 1);
-    tokens = [...new Set(tokens)];
-    return tokens
+    
+    return {
+        uniqueTokens: [...new Set(tokens)],
+        termFrequency: freq
+    };
 }
 
 function getTF_IDF(TF: number, DF: number, N: number){
@@ -55,7 +58,7 @@ function bm25Score({
 
 export async function POST(request: NextRequest) {
     const query = await request.json() as Query;
-    let search_tokens = await getTokens(query);
+    const { uniqueTokens: search_tokens, termFrequency: queryTermFreq } = await getTokens(query);
 
 
     // {id of token, the token, every doc that this token appears in}
@@ -84,6 +87,7 @@ export async function POST(request: NextRequest) {
     for (const [key, item] of db_tokens.entries()) {
         let docs = item.docs;
         let tokens_length = docs.length;
+        const queryBoost = queryTermFreq[item.token] || 1; // Boost for query term frequency
 
 
         // for (const doc of docs) {
@@ -98,7 +102,8 @@ export async function POST(request: NextRequest) {
                 docLen: doc.document.num_tokens,
                 avgDocLen: avgDocLen
             });
-            docScoring[doc.documentId] = (docScoring[doc.documentId] ?? 0) + bm25;
+            // Multiply by query term frequency to give more weight to repeated query terms
+            docScoring[doc.documentId] = (docScoring[doc.documentId] ?? 0) + (bm25 * queryBoost);
         }
     }
 
@@ -119,13 +124,16 @@ export async function POST(request: NextRequest) {
     }
     });
 
+    // Map results and maintain the sorted order from BM25 scores
     const response = results.map(doc => ({
         id: doc.id,
         title: doc.title,
         url: doc.url,
         snippet: doc.snippet,
         score: docScoring[doc.id]
-    }));
+    }))
+    // Re-sort by score since database doesn't preserve order
+    .sort((a, b) => b.score - a.score);
 
     return NextResponse.json(response);
 
